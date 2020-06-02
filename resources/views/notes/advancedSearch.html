@@ -1,0 +1,30 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+<div class="row d-flex justify-content-center">
+    <div class="col-md-6">
+        <h4 class="mb-4">Search Note</h4>
+        <form method="get" action="/note/advancedSearch/">
+            <div>
+                <label for="search">Search term:</label>
+                <input type="search" name="search" id="search" class="form-control">
+            </div>
+            <div class="input-group mt-4">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="Category">Options</label>
+                </div>
+                <select class="custom-select" name="category" id="Category">
+                    <option selected value="0">All Categories</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
+            <button type="submit" id="button" class="btn btn-primary mt-3">
+                <span>Search</span>
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

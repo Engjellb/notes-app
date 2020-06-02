@@ -1,0 +1,89 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+<div class="row d-flex justify-content-center">
+    <div class="col-md-6">
+        <h4 class="mb-4">Register</h4>
+        <form id="form">
+            <div>
+                <label for="firstname">First name:</label>
+                <input type="text" name="firtsname" id="firstname" value="{{ firstname }}" class="form-control">
+                <span class="text-danger" id="firstnameValidation">{{ errorsV.firstname }}</span>
+            </div>
+
+            <div>
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" value="{{ username }}" class="form-control">
+                <span class="text-danger" id="usernameValidation">{{ errorsV.username }}</span>
+                <span class="text-danger" id="usernameExists">{{ errorsV.usernameExists }}</span>
+            </div>
+
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" value="{{ email }}" class="form-control">
+                <span class="text-danger" id="emailValidation">{{ errorsV.email }}</span>
+                <span class="text-danger" id="emailExists">{{ errorsV.emailExists }}</span>
+            </div>
+
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" class="form-control">
+                <span class="text-danger" id="passLength"></span>
+            </div>
+
+            <div>
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" name="confirmPassword" id="confirmPassword" class="form-control">
+                <span class="text-danger" id="passMatch"></span>
+            </div>
+            <br>
+            <input type="submit" value="Register" class="btn btn-primary">
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+    $(document).ready(function () {
+        $('#form').submit(function(e) {
+            e.preventDefault()
+
+            var firstname = $('#firstname').val();
+            var username = $('#username').val();
+            var email = $('#email').val();
+            var password = $('#password').val();
+            var confirmPass = $('#confirmPassword').val();
+
+            var formData = new FormData();
+            formData.append('firstname', firstname);
+            formData.append('username', username);
+            formData.append('email', email);
+            formData.append('password', password);
+            formData.append('confirmPassword', confirmPass);
+
+            axios.post('/register/register', formData)
+                .then(response => {
+                    $('#firstnameValidation').text("");
+                    $('#usernameValidation').text("");
+                    $('#usernameExists').text("");
+                    $('#emailValidation').text("");
+                    $('#passLength').text("");
+                    $('#passMatch').text("");
+                    $('#emailExists').text("");
+
+                    $('#firstnameValidation').text(response.data.firstname);
+                    $('#usernameValidation').text(response.data.username);
+                    $('#emailValidation').text(response.data.email);
+                    $('#passLength').text(response.data.passLength);
+                    $('#passMatch').text(response.data.passMatch);
+                    $('#emailExists').text(response.data.emailExists);
+                    $('#usernameExists').text(response.data.usernameExists);
+
+                    if(Object.keys(response.data).length == 0) {
+                        window.location = 'http://notesapp.test/register/verifyEmail';
+                    }
+                });
+        });
+    })
+</script>
+{% endblock %}

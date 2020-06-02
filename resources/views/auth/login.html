@@ -1,0 +1,52 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+<div class="row d-flex justify-content-center">
+    <div class="col-md-6">
+        {% if sessionExp is not empty %}
+        <div class="alert alert-danger">
+            {{ sessionExp }}
+        </div>
+        {% endif %}
+        <h4 class="mb-4">Login</h4>
+        <form id="form">
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" class="form-control">
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" class="form-control">
+            <span class="text-danger" id="wrongPass"></span>
+            <br>
+            <button type="submit" id="button" class="btn btn-primary mt-3">
+                <span>Login</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+{% block js %}
+<script>
+    $(document).ready(function () {
+        $('#form').submit(function(e) {
+            e.preventDefault();
+            $('#button').prepend(`<span class="spinner-border spinner-border-sm"></span>`);
+            var email = $('#email').val();
+            var password = $('#password').val();
+
+            var formData = new FormData();
+            formData.append('email', email);
+            formData.append('password', password);
+
+            axios.post('/login/login', formData)
+                .then(response => {
+                    $('#wrongPass').text("");
+                    $('#wrongPass').text(response.data.wrongPass);
+                    $('span').remove('.spinner-border');
+                    if(response.data === '') {
+                        window.location = "http://notesapp.test/";
+                    }
+                });
+        });
+    });
+</script>
+{% endblock %}

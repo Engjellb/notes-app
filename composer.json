@@ -1,0 +1,21 @@
+{
+    "name": "admin/notesapp",
+    "description": "An app to maintain notes",
+    "authors": [
+        {
+            "name": "Engjell",
+            "email": "engjibeselica@gmail.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "^3.0",
+        "swiftmailer/swiftmailer": "^6.2",
+        "erusev/parsedown": "^1.7",
+        "league/commonmark": "^1.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "app\\" : "app/"
+        }
+    }
+}
