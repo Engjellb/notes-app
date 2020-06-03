@@ -2,6 +2,7 @@
 
 namespace app\Http\Controllers;
 
+use PDOException;
 use Swift_Mailer;
 use Swift_Message;
 use Swift_SmtpTransport;
@@ -19,13 +20,22 @@ class BaseController
         ]);
 
         $config = include "../config/database.php";
-        $this->conn = new \mysqli($config['db_host'], $config['db_user'], $config['db_pass'], $config['db_name']);
 
-        if($this->conn->connect_error) {
-            die('Connection failed: '.$this->conn->connect_error);
-        } else {
-            $this->conn->set_charset('utf8');
+        try {
+            $this->conn = new \PDO("sqlite:".$config['path_to_sqlite_file']);
+            echo 'Connected successfully';die();
+        } catch (PDOException $e) {
+            echo 'Connection failed: '.$e->getMessage();
+            die();
         }
+
+//        $this->conn = new \mysqli($config['db_host'], $config['db_user'], $config['db_pass'], $config['db_name']);
+//
+//        if($this->conn->connect_error) {
+//            die('Connection failed: '.$this->conn->connect_error);
+//        } else {
+//            $this->conn->set_charset('utf8');
+//        }
     }
 
     public function sendEmail($email, $name, $subject, $body) {

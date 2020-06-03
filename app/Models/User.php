@@ -6,7 +6,7 @@ class User extends Model
 {
     public static function findByEmail($conn, $email) {
         $sql = "SELECT * FROM users WHERE email = '".$email."' AND user_active = 1 LIMIT 1";
-
+//        echo $sql;die();
         $result = $conn->query($sql);
 
         return $result->num_rows > 0 ? $user = $result->fetch_object() : false;
