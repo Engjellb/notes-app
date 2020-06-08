@@ -8,167 +8,202 @@ class Note extends Model
 {
     public static function create($conn, $title, $content, $categoryId)
     {
-        $sql = "INSERT INTO notes (title, content, category_id) VALUES ('" . $title . "', '" . $content . "', " . $categoryId . ")";
+        try {
+            $sql = "INSERT INTO notes (title, content, categoryId) 
+                    VALUES (:title, :content, :categoryId)";
 
-        return $conn->query($sql);
+            $stm = $conn->prepare($sql);
+
+            $stm->execute([
+               ':title' => $title,
+               ':content' => $content,
+               ':categoryId' => $categoryId
+            ]);
+
+        } catch (\PDOException $e) {
+            die('Error: '.$e->getMessage());
+        }
+
     }
 
     public static function update($conn, $title, $content, $categoryId, $noteId)
     {
-        $sql = "UPDATE notes SET title = '" . $title . "', content = '" . $content . "', category_id = '" . $categoryId . "'
-                WHERE id = " . $noteId;
+        $sql = "UPDATE notes SET title = :title, content = :content, categoryId = :categoryId
+                WHERE id = :noteId";
 //        echo $sql;die();
-        return $conn->query($sql);
+        $stm = $conn->prepare($sql);
+
+        $stm->execute([
+            ':title' => $title,
+            ':content' => $content,
+            ':categoryId' => $categoryId,
+            ':noteId' => $noteId
+        ]);
     }
 
     public static function getNotes($conn, $limit = 4, $offset = 0)
     {
-        $sql = "SELECT notes.id, notes.title, categories.title AS categoryTitle, notes.content, notes.created_at 
+        $sql = "SELECT notes.id, notes.title, categories.title AS categoryTitle, notes.content
                 FROM `notes` LEFT JOIN categories 
-                ON notes.category_id = categories.id 
-                ORDER BY notes.created_at DESC
-                LIMIT " . $limit . " OFFSET " . $offset;
+                ON notes.categoryId = categories.id 
+                ORDER BY notes.id DESC
+                LIMIT :limit OFFSET :offset";
 
-        $result = $conn->query($sql);
+        $stm = $conn->prepare($sql);
+
+        $stm->execute([
+           ':limit' => $limit,
+           ':offset' => $offset
+        ]);
 
         $converter = new CommonMarkConverter();
 
         $notes = [];
-        if ($result->num_rows > 0) {
-            while ($note = $result->fetch_object()) {
-                $notes[] = ['id' => $note->id, 'title' => $note->title,
-                            'categoryTitle' => $note->categoryTitle, 'content' => $converter->convertToHtml($note->content), 'created_at' => $note->created_at];
-            }
-            return $notes;
+
+        while ($note = $stm->fetch(\PDO::FETCH_OBJ)) {
+            $notes[] = ['id' => $note->id, 'title' => $note->title,
+                'categoryTitle' => $note->categoryTitle, 'content' => $converter->convertToHtml($note->content)];
         }
-        return null;
+        return $notes;
     }
 
     public static function countNotes($conn)
     {
         $sql = "SELECT COUNT(*) AS total FROM `notes` LEFT JOIN categories 
-                ON notes.category_id = categories.id";
+                ON notes.categoryId = categories.id";
 
-        $result = $conn->query($sql);
-        $notes = $result->fetch_object();
+        $stm = $conn->prepare($sql);
+        $stm->execute();
 
-        return $notes->total;
+        return $stm->fetchColumn();
     }
 
     public static function countNotesBySearch($conn, $simpleSearch)
     {
         $sql = "SELECT COUNT(*) AS total FROM `notes` LEFT JOIN categories 
-                ON notes.category_id = categories.id 
-                WHERE notes.title LIKE '%" . $simpleSearch . "%' OR notes.content LIKE '%" . $simpleSearch . "%'";
+                ON notes.categoryId = categories.id 
+                WHERE notes.title LIKE :simpleSearch OR notes.content LIKE :simpleSearch";
 //        echo $sql;die();
-        $result = $conn->query($sql);
-        $notes = $result->fetch_object();
+        $stm = $conn->prepare($sql);
 
-        return $notes->total;
+        $stm->execute([':simpleSearch' => '%'.$simpleSearch.'%']);
+
+        return $stm->fetchColumn();
     }
 
     public static function allNotesBySearch($conn, $simpleSearch, $limit = 4, $offset = 0)
     {
-        $sql = "SELECT notes.id, notes.title, categories.title AS categoryTitle, notes.content, notes.created_at 
+        $sql = "SELECT notes.id, notes.title, categories.title AS categoryTitle, notes.content
                 FROM `notes` LEFT JOIN categories 
-                ON notes.category_id = categories.id 
-                WHERE notes.title LIKE '%" . $simpleSearch . "%' OR notes.content LIKE '%" . $simpleSearch . "%'
-                ORDER BY notes.created_at DESC
-                LIMIT " . $limit . " OFFSET " . $offset;
+                ON notes.categoryId = categories.id 
+                WHERE notes.title LIKE :simpleSearch OR notes.content LIKE :simpleSearch
+                ORDER BY notes.id DESC
+                LIMIT :limit OFFSET :offset";
 //        echo $sql;die();
-        $result = $conn->query($sql);
+        $stm = $conn->prepare($sql);
+
+        $stm->execute([
+           ':simpleSearch' => '%'.$simpleSearch.'%',
+           ':limit' => $limit,
+           ':offset' => $offset
+        ]);
 
         $notes = [];
-        if ($result->num_rows > 0) {
-            while ($note = $result->fetch_object()) {
-                $notes[] = $note;
-            }
-            return $notes;
+        while ($note = $stm->fetch(\PDO::FETCH_OBJ)) {
+            $notes[] = $note;
         }
-        return null;
+        return $notes;
     }
 
     public static function getNote($conn, $id)
     {
         $sql = "SELECT notes.id, notes.title, notes.content, categories.title AS categoryTitle, categories.id AS categoryId
                 FROM notes LEFT JOIN categories 
-                ON notes.category_id = categories.id WHERE notes.id = " . $id;
+                ON notes.categoryId = categories.id WHERE notes.id = :noteId";
 //        echo $sql;die();
-        $result = $conn->query($sql);
-        $note = $result->fetch_object();
+        $stm = $conn->prepare($sql);
+        $stm->execute([':noteId' => $id]);
 
         $converter = new CommonMarkConverter();
 
-        return $result->num_rows > 0 ? $note = ['id' => $note->id, 'title' => $note->title,
-            'categoryTitle' => $note->categoryTitle, 'content' => $converter->convertToHtml($note->content)] : null;
+        $row = $stm->fetch(\PDO::FETCH_OBJ);
+
+        $note = [];
+        if ($row) {
+            $note = ['id' => $row->id, 'title' => $row->title,
+                'categoryTitle' => $row->categoryTitle, 'content' => $converter->convertToHtml($row->content)];
+        }
+        return $note;
     }
 
     public static function getComments($conn, $id)
     {
         $sql = "SELECT users.username, comments.content 
                 FROM `comments` INNER JOIN users ON comments.user_id = users.id
-                INNER JOIN notes ON comments.note_id = notes.id WHERE notes.id = " . $id;
+                INNER JOIN notes ON comments.note_id = notes.id WHERE notes.id = :noteId";
 
-        $result = $conn->query($sql);
+        $stm = $conn->prepare($sql);
+
+        $stm->execute([':noteId' => $id]);
 
         $comments = [];
-        if ($result->num_rows > 0) {
-            while ($comment = $result->fetch_object()) {
-                $comments[] = $comment;
-            }
-            return $comments;
+
+        while ($comment = $stm->fetch(\PDO::FETCH_OBJ)) {
+            $comments[] = $comment;
         }
-        return null;
+        return $comments;
     }
 
     public static function destroy($conn, $noteId)
     {
-        $sql = "DELETE FROM notes WHERE id = " . $noteId;
+        $sql = "DELETE FROM notes WHERE id = :noteId";
 
-        return $conn->query($sql);
+        $stm = $conn->prepare($sql);
+        return $stm->execute([':noteId' => $noteId]);
+
     }
 
-    public static function countNotesByAdvancedSearch($conn, $search, $categoryId)
+    public static function countNotesByAdvancedSearch($conn, $categoryId, $search)
     {
-        $sql = "SELECT COUNT(*) AS total FROM (SELECT notes.id, notes.title, categories.id AS categoryId, 
-                MATCH (notes.title, notes.content) AGAINST ('" . $search . "' IN BOOLEAN MODE) AS coeficient 
-                FROM notes LEFT JOIN categories 
-                ON notes.category_id = categories.id) AS tab2 WHERE coeficient > 0 ";
+        $sql = "SELECT COUNT(*) AS Total FROM notes_search INNER JOIN categories 
+                ON notes_search.categoryId = categories.id WHERE notes_search MATCH :search ";
 
-        if ($categoryId > 0) {
-            $sql .= "AND categoryId = " . $categoryId;
-        }
+//        if($categoryId > 0) {
+//            $sql .= "AND notes_search.categoryId = :id";
+//        }
+        $stm = $conn->prepare($sql);
+        $stm->execute([
+            ':search' => $search
+        ]);
 
-        $result = $conn->query($sql);
-
-        $notes = $result->fetch_object();
-        return $notes->total;
+        return $stm->fetchColumn();
     }
 
     public static function NotesByAdvancedSearch($conn, $search, $categoryId, $limit = 4, $offset = 0)
     {
-        $sql = "SELECT * FROM (SELECT notes.id, notes.title, notes.content, notes.created_at, categories.id AS categoryId, 
-                categories.title AS categoryTitle,
-                MATCH (notes.title, notes.content) AGAINST ('" . $search . "' IN BOOLEAN MODE) AS coeficient 
-                FROM notes LEFT JOIN categories 
-                ON notes.category_id = categories.id) AS tab2 WHERE coeficient > 0 ";
-//        echo $sql;die();
 
-        if ($categoryId > 0) {
-            $sql .= "AND categoryId = " . $categoryId;
-        }
+        $sql = "SELECT note.title, note.content, categories.title AS categoryTitle 
+                FROM notes_search AS note INNER JOIN categories 
+                ON note.categoryId = categories.id WHERE notes_search MATCH :search ";
 
-        $sql .= " LIMIT ".$limit." OFFSET ".$offset;
+//        if($categoryId > 0) {
+//            $sql .= " AND note.categoryId = :id";
+//        }
 
-        $result = $conn->query($sql);
+        $sql .= " LIMIT :limit OFFSET :offset";
+
+        $stm = $conn->prepare($sql);
+
+        $stm->execute([
+            ':search' => $search,
+            ':limit' => $limit,
+            ':offset' => $offset
+        ]);
 
         $notes = [];
-        if ($result->num_rows > 0) {
-            while ($note = $result->fetch_object()) {
-                $notes[] = $note;
-            }
-            return $notes;
+        while ($note = $stm->fetch(\PDO::FETCH_OBJ)) {
+            $notes[] = $note;
         }
-        return null;
+        return $notes;
     }
 }

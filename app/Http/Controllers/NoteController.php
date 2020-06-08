@@ -13,7 +13,8 @@ class NoteController extends BaseController
     public function __construct()
     {
         parent::__construct();
-        $config = include '../config/session.php';
+
+        include '../config/session.php';
         getSession();
     }
 
@@ -66,9 +67,9 @@ class NoteController extends BaseController
         if(!empty($errorV)) {
             echo json_encode($errorV);
         } else {
-            if(Note::create($this->conn, $title, $content, $categoryId)){
-                $_SESSION['noteAdded'] = 'You have added a note';
-            }
+            Note::create($this->conn, $title, $content, $categoryId);
+            $_SESSION['noteAdded'] = 'You have added a note';
+
         }
     }
 
@@ -96,9 +97,8 @@ class NoteController extends BaseController
         if(!empty($errorV)) {
             echo json_encode($errorV);
         } else {
-            if(Note::update($this->conn, $title, $content, $categoryId, $noteId)){
-                $_SESSION['noteAdded'] = 'You updated a note';
-            }
+            Note::update($this->conn, $title, $content, $categoryId, $noteId);
+            $_SESSION['noteAdded'] = 'You updated a note';
         }
 
     }
@@ -110,7 +110,12 @@ class NoteController extends BaseController
         $userId = isset($_SESSION['userId']) ? $_SESSION['userId'] : 0;
         $data['like'] = Like::countLike($this->conn, $userId, $id);
 
-        $this->view('notes/show', $data);
+        if(empty($data['note'])) {
+            $data['raport'] = 'There is no note with this id';
+            $this->view('raport', $data);
+        } else {
+            $this->view('notes/show', $data);
+        }
     }
 
     public function addComment() {
@@ -182,7 +187,8 @@ class NoteController extends BaseController
         $data['per_page'] = (int) isset($_GET['perPage']) ? $_GET['perPage'] : 4 ;
         $data['page'] = (int) isset($_GET['page']) ? $_GET['page'] : 1 ;
 
-        $total = Note::countNotesByAdvancedSearch($this->conn, $search, $categoryId);
+        $total = Note::countNotesByAdvancedSearch($this->conn, $categoryId,  $search);
+
         $ofsset = ($data['page'] - 1) * $data['per_page'];
         $data['pages'] = ceil($total/$data['per_page']);
 
@@ -192,7 +198,6 @@ class NoteController extends BaseController
             $data['notes'] = $notes;
             $data['advancedSearch'] = $search;
             $data['categoryId'] = $categoryId;
-
             $this->view('notes/advancedSearchResult', $data);
         } else {
             $data['raport'] = 'There is no note with these criteria';

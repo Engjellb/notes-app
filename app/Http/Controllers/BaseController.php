@@ -23,7 +23,7 @@ class BaseController
 
         try {
             $this->conn = new \PDO("sqlite:".$config['path_to_sqlite_file']);
-            echo 'Connected successfully';die();
+//            echo 'Connected successfully';die();
         } catch (PDOException $e) {
             echo 'Connection failed: '.$e->getMessage();
             die();

@@ -56,12 +56,18 @@ class CategoryController extends BaseController
 
     public function notes($id) {
         $data['notes'] = Category::getNotes($this->conn, $id);
-        $this->view('categories/notes', $data);
+
+        if(empty($data['notes'])) {
+            $data['raport'] = 'There is no note for this category';
+            $this->view('raport', $data);
+        } else {
+            $this->view('categories/notes', $data);
+        }
     }
 
     public function deleteCategory($id) {
-        if(Category::destroy($this->conn, $id)){
-            header('Location: /category/index');
-        }
+        Category::destroy($this->conn, $id);
+        header('Location: /category/index');
+
     }
 }

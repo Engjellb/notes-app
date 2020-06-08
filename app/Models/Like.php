@@ -7,31 +7,36 @@ namespace app\Models;
 class Like extends Model
 {
     public static function create($conn, $userId, $noteId) {
-        $sql = "INSERT INTO likes (user_id, note_id) VALUES ('".$userId."', '".$noteId."')";
+        $sql = "INSERT INTO likes (user_id, note_id) VALUES (:userId, :noteId)";
 
-        return $conn->query($sql);
+        $stm = $conn->prepare($sql);
+        return $stm->execute([
+           ':userId' => $userId,
+           ':noteId' => $noteId
+        ]);
     }
 
     public static function getLikes($conn, $noteId) {
         $sql = "SELECT COUNT(*) AS total
-                FROM `likes`  WHERE note_id = ".$noteId;
+                FROM `likes`  WHERE note_id = :noteId";
 
-        $result = $conn->query($sql);
+        $stm = $conn->prepare($sql);
+        $stm->execute([':noteId' => $noteId]);
 
-            $likes = $result->fetch_object();
-            return $likes->total;
+        return $stm->fetchColumn();
     }
 
     public static function countLike($conn, $userId, $noteId) {
         $sql = "SELECT COUNT(*) AS total FROM likes 
-                WHERE user_id = '".$userId."' AND note_id = '".$noteId."'";
+                WHERE user_id = :userId AND note_id = :noteId";
 
-        $result = $conn->query($sql);
-        $like = $result->fetch_object();
+        $stm = $conn->prepare($sql);
 
-        if($like->total > 0) {
-            return true;
-        }
-        return false;
+        $stm->execute([
+            ':noteId' => $noteId,
+            ':userId' => $userId
+        ]);
+
+        return $stm->fetchColumn() > 0 ? true : false;
     }
 }

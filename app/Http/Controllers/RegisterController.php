@@ -44,7 +44,7 @@ class RegisterController extends BaseController
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errorsValidation['emails'] = 'Email is not valid';
+            $errorsValidation['email'] = 'Email is not valid';
         } else {
             if(User::checkEmail($this->conn, $email)) {
                 $errorsValidation['emailExists'] = 'Email is already in use';
@@ -69,19 +69,18 @@ class RegisterController extends BaseController
         } else {
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            if(User::create($this->conn, $firsname, $username, $email, $passwordHash)){
+            User::create($this->conn, $firsname, $username, $email, $passwordHash);
                 $_SESSION['successRegistration'] = 'You have been registred successfully';
                 $app = include '../config/app.php';
-                $subject = 'Endless Univers registration - '.$email;
-                $link = $app['app_host']."/register/activation/".sha1($app['salt'].$email);
+                $subject = 'Endless Univers registration - ' . $email;
+                $link = $app['app_host'] . "/register/activation/" . sha1($app['salt'] . $email);
 
                 $body = include '../resources/views/emails/activation.php';
-                if($this->sendEmail($email, $firsname, $subject, $body)) {
-                    $_SESSION['registration'] = 'Thank you for registration '.$firsname;
-                }
+//                if($this->sendEmail($email, $firsname, $subject, $body)) {
+//                    $_SESSION['registration'] = 'Thank you for registration '.$firsname;
+//                }
             }
         }
-    }
 
     public function verifyEmail() {
         $data['success'] = isset($_SESSION['registration']) ? $_SESSION['registration'] : '';

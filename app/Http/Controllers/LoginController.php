@@ -23,8 +23,8 @@ class LoginController extends BaseController
             if(password_verify($password, $user->password)) {
                 $_SESSION['isAuth'] = true;
                 $_SESSION['userId'] = $user->id;
-                $_SESSION['level'] = $user->level;
-                $_SESSION['loggedTime'] = time();
+//                $_SESSION['level'] = $user->level;
+//                $_SESSION['loggedTime'] = time();
                 $_SESSION['isAdmin'] = ($user->level == 1) ? true : false;
                 $_SESSION['authenticated'] = 'You are logged in';
                 die();

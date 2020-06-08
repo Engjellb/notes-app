@@ -5,59 +5,101 @@ namespace app\Models;
 class Category extends Model
 {
     public static function getCategories($conn) {
-        $sql = "SELECT * FROM categories ORDER BY created_at DESC";
+        try {
+            $sql = "SELECT * FROM categories";
 
-        $result = $conn->query($sql);
+            $stm = $conn->prepare($sql);
+            $stm->execute();
 
-        $categories = [];
-        if($result->num_rows > 0) {
-            while($category = $result->fetch_object()) {
+            $categories = [];
+
+            while ($category = $stm->fetch(\PDO::FETCH_OBJ)) {
                 $categories[] = $category;
             }
+
             return $categories;
+
+        } catch (\PDOException $e) {
+            die('Error: '.$e->getMessage());
         }
-        return null;
+
     }
 
     public static function create($conn, $title) {
-        $sql = "INSERT INTO categories (title) VALUES ('".$title."')";
+        try {
+            $sql = "INSERT INTO categories (title) VALUES (:title)";
 
-        $conn->query($sql);
+            $stm = $conn->prepare($sql);
+
+            $c = $stm->execute([':title' => $title]);
+
+        } catch (\PDOException $e) {
+            die('Error: '.$e->getMessage());
+        }
     }
 
     public static function getNotes($conn, $categoryId) {
-        $sql = "SELECT * FROM categories 
-                INNER JOIN notes ON categories.id = notes.category_id WHERE categories.id = ".$categoryId;
+        try {
+            $sql = "SELECT * FROM categories 
+                INNER JOIN notes ON categories.id = notes.categoryId WHERE categories.id = :categoryId";
 
-        $result = $conn->query($sql);
+            $stm = $conn->prepare($sql);
 
-        $notes = [];
-        if($result->num_rows > 0) {
-            while($note = $result->fetch_object()){
+            $stm->execute([':categoryId' => $categoryId]);
+            $notes = [];
+
+            while ($note = $stm->fetch(\PDO::FETCH_OBJ)) {
                 $notes[] = $note;
             }
             return $notes;
+
+        } catch (\PDOException $e) {
+            die('Error: '.$e->getMessage());
         }
-        return null;
     }
 
     public static function destroy($conn, $id) {
-        $sql = "DELETE FROM categories WHERE id = ".$id;
+        try {
+            $sql = "DELETE FROM categories WHERE id = :id";
 
-        return $conn->query($sql);
+            $stm = $conn->prepare($sql);
+            $stm->execute([':id' => $id]);
+
+        } catch (\PDOException $e) {
+            die('Error: '.$e->getMessage());
+        }
+
     }
 
     public static function getCategory($conn, $id) {
-        $sql = "SELECT * FROM categories WHERE id = ".$id;
+        try {
+            $sql = "SELECT * FROM categories WHERE id = :id";
 
-        $result = $conn->query($sql);
+            $stm = $conn->prepare($sql);
 
-        return $result->num_rows > 0 ? $category = $result->fetch_object() : null;
+            $stm->execute([':id' => $id]);
+            $category = $stm->fetch(\PDO::FETCH_OBJ);
+
+            return $category ? $category : null;
+
+        } catch (\PDOException $e) {
+            die('Error: '.$e->getMessage());
+        }
     }
 
     public static function update($conn, $title, $id) {
-        $sql = "UPDATE categories SET title = '".$title."' WHERE id = ".$id;
+        try {
+            $sql = "UPDATE categories SET title = :title WHERE id = :id";
 
-        return $conn->query($sql);
+            $stm = $conn->prepare($sql);
+
+            $stm->execute([
+                ':title' => $title,
+                ':id' => $id
+            ]);
+
+        } catch (\PDOException $e) {
+            die('Error: '.$e->getMessage());
+        }
     }
 }
