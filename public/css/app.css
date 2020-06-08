@@ -1,0 +1,54 @@
+.dropdown {
+    position: relative;
+    top: 4px;
+    left: 6px;
+    cursor: pointer;
+}
+.dropdown2 {
+    position: relative;
+    top: 4px;
+    left: 25px;
+    cursor: pointer;
+}
+.card {
+    border-radius: 8px;
+    display: block;
+    height: 70%;
+    overflow: auto;
+}
+
+.icons {
+    position: relative;
+    bottom: -11px;
+    right: 0px;
+}
+.icons a {
+    color: dimgrey;
+}
+
+.card-body a {
+    color: dimgrey;
+}
+
+.card-body a:hover {
+    text-decoration: none;
+}
+
+.comment {
+    position: relative;
+    right: 212px;
+}
+a.like {
+    color: dimgrey;
+}
+.like button {
+    background-color: transparent;
+    outline: none;
+    border: none;
+}
+.icons form button {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: dimgrey;
+}

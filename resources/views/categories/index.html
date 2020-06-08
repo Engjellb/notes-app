@@ -1,0 +1,37 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+
+<h4 class="mb-4">Categories</h4>
+<div class="row">
+    {% for category in categories %}
+    <div class="col-md-3">
+        <div class="card">
+            <a href="/category/notes/{{ category.id }}">
+            <div class="card-body pb-3">
+                <h5 class="card-title">{{ category.title }}</h5>
+            </div>
+            </a>
+            {% if isAuth %}
+            <div class="text-right icons">
+                {% if isAdmin %}
+                <i class="material-icons pr-2 pb-1"><a href="/category/editCategoryForm/{{ category.id }}">edit</a></i>
+                <i class="material-icons pr-2 pb-1"><a href="/category/deleteCategory/{{ category.id }}">delete</a></i>
+                {% endif %}
+            <i class="material-icons pr-2 pb-1"><a href="">favorite</a></i>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+{% block js %}
+<script>
+    $(document).ready(function () {
+        // $('.card-title').text(function () {
+        //     return $(this).text().substring(0, 18) + '...';
+        // });
+    });
+</script>
+{% endblock %}

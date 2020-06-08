@@ -1,0 +1,91 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+<div class="row">
+    {% for note in notes %}
+        <div class="col-md-3 col-sm-4">
+
+            <div class="card">
+                <div class="card-body pb-3">
+                    <a href="/note/show/{{ note.id }}">
+                    <h5 class="card-title">{{ note.title }}</h5>
+
+                    <h6 class="card-subtitle mb-2 text-muted">Category: {{ note.categoryTitle}}</h6>
+                    <p class="card-text">{{ note.content }}.</p>
+                    <span id="currentTime">{{ note.created_at }}</span><br><br>
+                    </a>
+                        <a href="" class="note" data-id="{{ note.id }}"
+                           data-toggle="modal" data-target="#exampleModal"><span id="comments">Comments | </span></a>
+                    <a href=""><span>Likes</span></a>
+                </div>
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Comments</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <span class="pb-1"><strong>Name and surname</strong></span><br>
+                                <span>Comment</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if isAuth %}
+                <div class="text-right icons">
+                    <i class="material-icons pr-2 pb-1"><a href="/note/edit/{{ note.id }}">edit</a></i>
+                    <i class="material-icons pr-2 pb-1"><a href="/category/deleteCategory/{{ category.id }}">delete</a></i>
+                    <form action="/note/addFavorite" method="post" style="display: inline-block">
+                        <input type="hidden" name="noteId" value="{{ note.id }}">
+                            <button type="submit" {% for id in noteId %}
+                                    {% if note.id == id %}style="pointer-events: none;color: #D10F0F;"{% endif %}
+                                    {% endfor %}>
+                                <i class="material-icons pr-2 pb-1">favorite</i>
+                            </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% if pages > 1 %}
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        {% for i in 1..pages %}
+        <li class="page-item {% if page == i %} active {% endif %} "><a class="page-link"
+                             href="/note/advancedSearch/?perPage={{ per_page }}&page={{ i }}&search={{ advancedSearch }}&category={{ categoryId }}">{{ i }}</a></li>
+        {% endfor %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+{% block js %}
+<script>
+    $(document).ready(function () {
+        $('.note').click(function (e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+
+            var formData = new FormData();
+            formData.append('noteId', id);
+
+            axios.post('/note/show', formData)
+                .then(response => {
+                });
+
+        });
+        $('.card-title').text(function () {
+            return $(this).text().substring(0, 18) + '...';
+        });
+        $('.card-text').text(function () {
+            return $(this).text().substring(0, 130) + '...';
+        });
+
+
+    });
+</script>
+{% endblock %}

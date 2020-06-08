@@ -1,0 +1,30 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <h4>{{ note.title }}</h4>
+        <h5>{{ note.categoryTitle }}</h5>
+        <p>{{ note.content | raw }}</p>
+        <br>
+        <div class="mb-4">
+                <form action="/note/addLike" method="post">
+                    <input type="hidden" name="noteId" value="{{ note.id }}">
+                    <div class="row like ml-1">
+                        <div class="col-md-2 pl-0">
+                            <button {% if like %}style="pointer-events: none;color: blue;"{% endif %}>
+                                <i class="material-icons">thumb_up</i><span style="position: absolute">Like</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+        </div>
+        <form action="/note/addComment" method="post">
+            <input type="hidden" name="noteId" value="{{ note.id }}">
+            <label for="comment">Add comment</label>
+            <textarea name="content" class="form-control" id="comment" cols="30" rows="2"></textarea>
+            <input type="submit" class="btn btn-primary mt-3" value="Add comment">
+        </form>
+    </div>
+</div>
+{% endblock %}

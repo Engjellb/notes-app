@@ -1,0 +1,50 @@
+{% extends "layouts/layout.html" %}
+
+{% block content %}
+<div class="row d-flex justify-content-center">
+    <div class="col-md-6">
+        <h4 class="mb-4">Edit Category</h4>
+        <form id="form">
+            <input type="hidden" name="categoryId" id="categoryId" value="{{ category.id }}">
+            <div>
+                <label for="title">Title:</label>
+                <input type="text" name="title" id="title" class="form-control" value="{{ category.title }}">
+                <span class="text-danger" id="titleValidation"></span>
+            </div>
+            <br>
+            <button type="submit" id="button" class="btn btn-primary mt-3">
+                <span>Edit Category</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+{% block js %}
+<script>
+    $(document).ready(function () {
+        $('#form').submit(function(e) {
+            e.preventDefault();
+            $('#button').prepend(`<span class="spinner-border spinner-border-sm"></span>`);
+            var title = $('#title').val();
+            var categoryId = $('#categoryId').val();
+
+            var formData = new FormData();
+            formData.append('title', title);
+            formData.append('categoryId', categoryId);
+
+            axios.post('/category/editCategory', formData)
+                .then(response => {
+                    $('#titleValidation').text("");
+
+                    $('span').remove('.spinner-border');
+                    $('#titleValidation').text(response.data.title);
+
+                    if(Object.keys(response.data).length == 0) {
+                        window.location = "http://notesapp.test/category/index";
+                    }
+                });
+        });
+    });
+</script>
+{% endblock %}
