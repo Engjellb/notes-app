@@ -1,7 +1,7 @@
 # notess-app
 An app to maintain notes
 
-**Language programmin**: PHP
+**Programming language**: PHP  
 **Databases**: MySQL, SQLite
 
 install composer dependencies through CLI:
