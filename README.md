@@ -1,5 +1,5 @@
 # notess-app
-An app to maintain notes with PHP and MySQL
+An app to maintain notes with PHP and SQLite
 
 install composer dependencies through CLI:
 
