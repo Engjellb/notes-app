@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'app_host' => 'http://notesapp.test',
-    'salt' => '$%)@#%&^)$_!)#%*$(dslkfdDLN153$^^'
+    'app_host' => $_ENV['APP_HOST'],
+    'salt' => $_ENV['APP_SECRET_KEY']
 ];

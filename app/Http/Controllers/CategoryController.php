@@ -25,7 +25,7 @@ class CategoryController extends BaseController
     public function editCategory() {
         $categoryId = (int) $_POST['categoryId'];
 
-        $title = filter_var($_POST['title'], FILTER_SANITIZE_STRING);
+        $title = filter_var($_POST['title'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         if(mb_strlen($title) < 3 || mb_strlen($title) > 15) {
             $errorV['title'] = 'Title should be min 3 and max 15 characters';
@@ -40,7 +40,7 @@ class CategoryController extends BaseController
     }
 
     public function addCategory() {
-        $title = filter_var($_POST['title'], FILTER_SANITIZE_STRING);
+        $title = filter_var($_POST['title'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         if(mb_strlen($title) < 3 || mb_strlen($title) > 15) {
             $errorV['title'] = 'Title should be min 3 and max 15 characters';

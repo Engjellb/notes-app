@@ -2,6 +2,9 @@
 session_start();
 include '../vendor/autoload.php';
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__."/..");
+$dotenv->load();
+
 if (!isset($_SESSION['isAuth'])) {
     $_SESSION['isAuth'] = false;
     $_SESSION['isAdmin'] = false;
@@ -13,7 +16,7 @@ $url = explode('/', $_SERVER['REQUEST_URI']);
 if(!empty($url[1])) {
     $segment = $url[1];
     $controller = 'app\Http\Controllers\\'.ucfirst($url[1]).'Controller';
-    $method = filter_var($url[2], FILTER_SANITIZE_STRING);
+    $method = filter_var($url[2], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 } else {
     $segment = 'home';
     $controller = 'app\Http\Controllers\HomeController';

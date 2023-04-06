@@ -80,7 +80,7 @@
                     $('#usernameExists').text(response.data.usernameExists);
 
                     if(Object.keys(response.data).length == 0) {
-                        window.location = 'http://notesapp.test/register/verifyEmail';
+                        window.location = '/register/verifyEmail';
                     }
                 });
         });

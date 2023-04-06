@@ -10,6 +10,12 @@ Some of request and response are done with axios. There are also composer depend
 **Programming language**: PHP  
 **Databases**: MySQL, SQLite
 
+## Getting started
+
 install composer dependencies through CLI:
 
-### composer install
+    composer install
+
+Copy `.env.example` to `.env` file and fill with your required environment values
+
+    cp .env.example .env

@@ -50,9 +50,9 @@ class NoteController extends BaseController
     }
 
     public function addNote() {
-        $title = filter_var($_POST['title'], FILTER_SANITIZE_STRING);
+        $title = filter_var($_POST['title'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $content = $_POST['content'];
-        $categoryId = filter_var($_POST['category'], FILTER_SANITIZE_STRING);
+        $categoryId = filter_var($_POST['category'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         if(mb_strlen($title) < 5 || mb_strlen($title) > 100) {
             $errorV['title'] = 'Title should be min 5 and max 100 characters';
@@ -81,8 +81,8 @@ class NoteController extends BaseController
 
     public function update() {
         $noteId = (int) $_POST['noteId'];
-        $title = filter_var($_POST['title'], FILTER_SANITIZE_STRING);
-        $content = filter_var($_POST['content'], FILTER_SANITIZE_STRING);
+        $title = filter_var($_POST['title'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $content = filter_var($_POST['content'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $categoryId = (int) $_POST['category'];
 
         if(mb_strlen($title) < 5 || mb_strlen($title) > 100) {
@@ -115,7 +115,7 @@ class NoteController extends BaseController
 
     public function addComment() {
         $noteId = (int) $_POST['noteId'];
-        $content = filter_var($_POST['content'], FILTER_SANITIZE_STRING);
+        $content = filter_var($_POST['content'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         if(Comment::create($this->conn, $_SESSION['userId'], $noteId, $content)) {
             header('Location: /note/show/'.$noteId);
@@ -145,7 +145,7 @@ class NoteController extends BaseController
     }
 
     public function simpleSearch() {
-        $simpleSearch = filter_var($_GET['simpleSearch'], FILTER_SANITIZE_STRING);
+        $simpleSearch = filter_var($_GET['simpleSearch'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         $data['per_page'] = (int) isset($_GET['perPage']) ? $_GET['perPage'] : 4 ;
         $data['page'] = (int) isset($_GET['page']) ? $_GET['page'] : 1 ;
@@ -176,7 +176,7 @@ class NoteController extends BaseController
     }
 
     public function advancedSearch() {
-        $search = filter_var($_GET['search'], FILTER_SANITIZE_STRING);
+        $search = filter_var($_GET['search'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $categoryId = (int) $_GET['category'];
 
         $data['per_page'] = (int) isset($_GET['perPage']) ? $_GET['perPage'] : 4 ;

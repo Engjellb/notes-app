@@ -15,7 +15,7 @@ class LoginController extends BaseController
 
     public function login() {
         $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-        $password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+        $password = filter_var($_POST['password'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         $user = User::findByEmail($this->conn, $email);
 
