@@ -14,7 +14,7 @@
                     <label class="input-group-text" for="Category">Options</label>
                 </div>
                 <select class="custom-select" name="category" id="Category">
-                    <option selected value="0">Choose Category</option>
+                    <option selected value="0">All Categories</option>
                     {% for category in categories %}
                     <option value="{{ category.id }}">{{ category.title }}</option>
                     {% endfor %}

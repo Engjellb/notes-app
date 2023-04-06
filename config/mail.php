@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'mail_username' => '83702c5a653d2f',
-    'mail_password' => '5c42758f5b591b',
+    'mail_username' => $_ENV['MAIL_USERNAME'],
+    'mail_password' => $_ENV['MAIL_PASSWORD'],
     //smpt fake server to test emails
-    'mail_server' => 'smtp.mailtrap.io',
-    'mail_port' => 25
+    'mail_server' => $_ENV['MAIL_SERVER'],
+    'mail_port' => $_ENV['MAIL_PORT']
 ];

@@ -39,25 +39,25 @@ class User extends Model
             die('Error: '.$e->getMessage());
         }
     }
-//
-//    public static function checkEmailActivation($conn, $email) {
-//        $config = include '../config/app.php';
-//        $sql = "SELECT * FROM users WHERE SHA1(CONCAT('".$config['salt']."', email)) = '".$email."' AND user_active = 0 LIMIT 1";
-//
-//        $result = $conn->query($sql);
-//
-//        return $result->num_rows > 0 ? true : false;
-//    }
-//
-//    public static function updateUserActive($conn, $email) {
-//        $config = include '../config/app.php';
-//
-//        $sql = "UPDATE users SET user_active = 1
-//                WHERE SHA1(CONCAT('".$config['salt']."', email)) = '".$email."' LIMIT 1";
-//
-//        return $conn->query($sql);
-//    }
-//
+
+   public static function checkEmailActivation($conn, $email) {
+       $config = include '../config/app.php';
+       $sql = "SELECT * FROM users WHERE SHA1(CONCAT('".$config['salt']."', email)) = '".$email."' AND user_active = 0 LIMIT 1";
+
+       $result = $conn->query($sql);
+
+       return $result->num_rows > 0 ? true : false;
+   }
+
+   public static function updateUserActive($conn, $email) {
+       $config = include '../config/app.php';
+
+       $sql = "UPDATE users SET user_active = 1
+               WHERE SHA1(CONCAT('".$config['salt']."', email)) = '".$email."' LIMIT 1";
+
+       return $conn->query($sql);
+   }
+
     public static function findByUsername($conn, $username) {
         try {
             $sql = "SELECT * FROM users WHERE username = :username LIMIT 1";

@@ -51,7 +51,7 @@ class BaseController
 
 // Create a message
         $message = (new Swift_Message($subject))
-            ->setFrom(['noreply@noreply.com' => 'Engjell Beselica'])
+            ->setFrom(['noreply@noreply.com' => 'Notes App'])
             ->setTo([$email => $name])
             ->setBody(strip_tags($body))
             ->addPart($body, 'text/html');

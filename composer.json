@@ -12,7 +12,8 @@
         "swiftmailer/swiftmailer": "^6.2",
         "erusev/parsedown": "^1.7",
         "league/commonmark": "^1.4",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "vlucas/phpdotenv": "^5.5"
     },
     "autoload": {
         "psr-4": {

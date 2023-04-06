@@ -43,7 +43,7 @@
                     $('#wrongPass').text(response.data.wrongPass);
                     $('span').remove('.spinner-border');
                     if(response.data === '') {
-                        window.location = "http://notesapp.test/";
+                        window.location = '/';
                     }
                 });
         });

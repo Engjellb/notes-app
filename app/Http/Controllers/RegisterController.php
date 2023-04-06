@@ -21,11 +21,11 @@ class RegisterController extends BaseController
         unset($_SESSION['emails']);
         unset($_SESSION['errorsV']);
 
-        $firsname = filter_var($_POST['firstname'], FILTER_SANITIZE_STRING);
-        $username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
+        $firsname = filter_var($_POST['firstname'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $username = filter_var($_POST['username'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-        $password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
-        $confirmpassword = filter_var($_POST['confirmPassword'], FILTER_SANITIZE_STRING);
+        $password = filter_var($_POST['password'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $confirmpassword = filter_var($_POST['confirmPassword'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         $errorsValidation = [];
 
@@ -69,18 +69,19 @@ class RegisterController extends BaseController
         } else {
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            User::create($this->conn, $firsname, $username, $email, $passwordHash);
+            if(User::create($this->conn, $firsname, $username, $email, $passwordHash)){
                 $_SESSION['successRegistration'] = 'You have been registred successfully';
                 $app = include '../config/app.php';
-                $subject = 'Endless Univers registration - ' . $email;
-                $link = $app['app_host'] . "/register/activation/" . sha1($app['salt'] . $email);
+                $subject = 'Registration - '.$email;
+                $link = $app['app_host']."/register/activation/".sha1($app['salt'].$email);
 
                 $body = include '../resources/views/emails/activation.php';
-//                if($this->sendEmail($email, $firsname, $subject, $body)) {
-//                    $_SESSION['registration'] = 'Thank you for registration '.$firsname;
-//                }
+                if($this->sendEmail($email, $firsname, $subject, $body)) {
+                    $_SESSION['registration'] = 'Thank you for registration '.$firsname;
+                }
             }
         }
+    }
 
     public function verifyEmail() {
         $data['success'] = isset($_SESSION['registration']) ? $_SESSION['registration'] : '';
@@ -89,7 +90,7 @@ class RegisterController extends BaseController
     }
 
     public function activation($email) {
-        $email = filter_var($email, FILTER_SANITIZE_STRING);
+        $email = filter_var($email, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         if(User::checkEmailActivation($this->conn, $email)) {
             if(User::updateUserActive($this->conn, $email)) {

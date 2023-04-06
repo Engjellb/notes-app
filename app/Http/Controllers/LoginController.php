@@ -15,7 +15,7 @@ class LoginController extends BaseController
 
     public function login() {
         $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-        $password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+        $password = filter_var($_POST['password'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         $user = User::findByEmail($this->conn, $email);
 
@@ -23,8 +23,8 @@ class LoginController extends BaseController
             if(password_verify($password, $user->password)) {
                 $_SESSION['isAuth'] = true;
                 $_SESSION['userId'] = $user->id;
-//                $_SESSION['level'] = $user->level;
-//                $_SESSION['loggedTime'] = time();
+                $_SESSION['level'] = $user->level;
+                $_SESSION['loggedTime'] = time();
                 $_SESSION['isAdmin'] = ($user->level == 1) ? true : false;
                 $_SESSION['authenticated'] = 'You are logged in';
                 die();
