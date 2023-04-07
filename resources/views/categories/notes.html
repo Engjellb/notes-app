@@ -8,7 +8,7 @@
             <div class="card">
                 <div class="card-body pb-3">
                     <h5 class="card-title">{{ note.title }}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Category</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">Category: {{ note.categoryTitle }}</h6>
                     <p class="card-text">{{ note.content }}.</p>
                     <span id="currentTime">{{ note.created_at }}</span>
                 </div>

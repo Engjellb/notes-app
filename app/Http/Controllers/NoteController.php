@@ -199,4 +199,13 @@ class NoteController extends BaseController
             $this->view('raport', $data);
         }
     }
+
+    public function deleteFavoriteNote($noteId) {
+        
+        $userId = $_SESSION['userId'];
+        
+        if (Favorite::deleteFavoriteNote($this->conn, $userId, $noteId)) {
+            header('Location: /note/favorites');
+        }
+    }
 }

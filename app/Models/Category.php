@@ -26,7 +26,8 @@ class Category extends Model
     }
 
     public static function getNotes($conn, $categoryId) {
-        $sql = "SELECT * FROM categories 
+        $sql = "SELECT notes.title, notes.content, notes.created_at, categories.title AS categoryTitle
+                FROM categories 
                 INNER JOIN notes ON categories.id = notes.category_id WHERE categories.id = ".$categoryId;
 
         $result = $conn->query($sql);
