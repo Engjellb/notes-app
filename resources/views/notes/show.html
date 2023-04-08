@@ -40,27 +40,29 @@
             </div>
         {% endif %}
         <div>
-            {% if comments is not empty %}
-                <table class="table mt-3">
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Content</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for comment in comments %}
+            {% if isAuth %}
+                {% if comments is not empty %}
+                    <table class="table mt-3">
+                        <thead>
                             <tr>
-                                <td>{{ comment.username }}</td>
-                                <td>{{ comment.content }}</td>
+                                <th>Username</th>
+                                <th>Content</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <div class="mt-3">
-                    <span>Comment to be the first one</span>
-                </div>
+                        </thead>
+                        <tbody>
+                            {% for comment in comments %}
+                                <tr>
+                                    <td>{{ comment.username }}</td>
+                                    <td>{{ comment.content }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="mt-3">
+                        <span>Comment to be the first one</span>
+                    </div>
+                {% endif %}
             {% endif %}
         </div>
     </div>
